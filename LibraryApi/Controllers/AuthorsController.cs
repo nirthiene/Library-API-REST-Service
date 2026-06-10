@@ -11,16 +11,10 @@ public class AuthorsController : ControllerBase
 {
     private readonly AppDbContext _db;
 
-    public AuthorsController(AppDbContext db)
-    {
-        _db = db;
-    }
+    public AuthorsController(AppDbContext db) => _db = db;
 
     [HttpGet]
-    public IActionResult GetAll()
-    {
-        return Ok(_db.Authors.ToList());
-    }
+    public IActionResult GetAll() => Ok(_db.Authors.ToList());
 
     [HttpPost]
     public IActionResult Create(Author author)

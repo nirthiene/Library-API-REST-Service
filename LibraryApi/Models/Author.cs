@@ -18,6 +18,7 @@ public class Author
     [JsonPropertyName("last_name")]
     public string? LastName { get; set; }
 
+    [JsonIgnore]
     public ICollection<Book> Books { get; set; } = new List<Book>();
 }
 

@@ -9,59 +9,68 @@ namespace LibraryApi.Controllers;
 [Route("books")]
 public class BooksController : ControllerBase
 {
-	private readonly AppDbContext _db;
+    private readonly AppDbContext _db;
 
-	public BooksController(AppDbContext db)
-	{
-		_db = db;
-	}
+    public BooksController(AppDbContext db) => _db = db;
 
-	[HttpGet]
-	public IActionResult GetAll([FromQuery] int? authorId)
-	{
-		var query = _db.Books.Include(b => b.Author).AsQueryable();
+    private bool IsValidBook(Book book)
+    {
+        return !string.IsNullOrWhiteSpace(book.Title)
+               && book.Year > 0
+               && _db.Authors.Any(a => a.Id == book.AuthorId);
+    }
+    [HttpGet]
+    public IActionResult GetAll() => Ok(_db.Books.ToList());
 
-		if (authorId.HasValue)
-		{
-			query = query.Where(b => b.AuthorId == authorId);
-		}
+    [HttpGet("{id}")]
+    public IActionResult GetById(int id)
+    {
+        var book = _db.Books.Include(b => b.Author).FirstOrDefault(b=> b.Id==id);
+        //var book = _db.Books.Find(id);
+        return book == null ? NotFound() : Ok(book);
+    }
 
-		return Ok(query.ToList());
-	}
+    [HttpPost]
+    public IActionResult Create(Book book)
+    {
+        if (!IsValidBook(book))
+            return BadRequest();
 
-	[HttpPost]
-	public IActionResult Create(Book book)
-	{
-		_db.Books.Add(book);
-		_db.SaveChanges();
-		return Ok(book);
-	}
+        var author = _db.Authors.Find(book.AuthorId);
+        book.Author = author;
 
-	[HttpPut("{id}")]
-	public IActionResult Update(int id, Book updatedBook)
-	{
-		var book = _db.Books.Find(id);
-		if (book == null) return NotFound();
+        _db.Books.Add(book);
+        _db.SaveChanges();
 
-		// validation
-		if (updatedBook.Year < 0) return BadRequest("Year can't be negative.");
+        return CreatedAtAction(
+            nameof(GetById),
+            new { id = book.Id },
+            book
+        );
+    }
 
-		book.Title = updatedBook.Title;
-		book.Year = updatedBook.Year;
-		book.AuthorId = updatedBook.AuthorId;
+    [HttpPut("{id}")]
+    public IActionResult Update(int id, Book updatedBook)
+    {
+        var book = _db.Books.Find(id);
+        if (book == null) return NotFound();
 
-		_db.SaveChanges();
-		return NoContent();
-	}
+        book.Title = updatedBook.Title;
+        book.Year = updatedBook.Year;
+        book.AuthorId = updatedBook.AuthorId;
 
-	[HttpDelete("{id}")]
-	public IActionResult Delete(int id)
-	{
-		var book = _db.Books.Find(id);
-		if (book == null) return NotFound();
+        _db.SaveChanges();
+        return NoContent();
+    }
 
-		_db.Books.Remove(book);
-		_db.SaveChanges();
-		return NoContent();
-	}
+    [HttpDelete("{id}")]
+    public IActionResult Delete(int id)
+    {
+        var book = _db.Books.Find(id);
+        if (book == null) return NotFound();
+
+        _db.Books.Remove(book);
+        _db.SaveChanges();
+        return NoContent();
+    }
 }

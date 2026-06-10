@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using LibraryApi.Data;
 using LibraryApi.Models;
 
@@ -10,10 +11,7 @@ public class CopiesController : ControllerBase
 {
     private readonly AppDbContext _db;
 
-    public CopiesController(AppDbContext db)
-    {
-        _db = db;
-    }
+    public CopiesController(AppDbContext db) => _db= db;
 
     [HttpPost]
     public IActionResult Create(Copy copy)
