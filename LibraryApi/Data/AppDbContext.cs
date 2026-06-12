@@ -9,6 +9,5 @@ namespace LibraryApi.Data
 
         public DbSet<Author> Authors { get; set; }
         public DbSet<Book> Books { get; set; }
-        public DbSet<Copy> Copies { get; set; }
     }
 }

@@ -26,7 +26,7 @@ public class AuthorsController : ControllerBase
         //return Ok(author); //200 - Ok
     }
     [HttpPut("{id}")]
-    public IActionResult Update(long id, Author author) //int -> long
+    public IActionResult Update(long id, Author author)
     {
         var existingAuthor = _db.Authors.Find(id);
 
@@ -43,7 +43,7 @@ public class AuthorsController : ControllerBase
         return NoContent();
     }
     [HttpGet("{id}")]
-    public IActionResult GetById(long id) //int -> long
+    public IActionResult GetById(long id)
     {
         var author = _db.Authors.Find(id);
 
@@ -54,7 +54,7 @@ public class AuthorsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    public IActionResult Delete(long id) //int -> long
+    public IActionResult Delete(long id)
     {
         var author = _db.Authors.Find(id);
 

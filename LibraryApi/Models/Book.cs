@@ -6,7 +6,7 @@ public class Book
 {
 
     [JsonPropertyName("id")]
-    public long Id { get; set; } //int -> long
+    public long Id { get; set; }
     [Required]
     [JsonPropertyName("title")]
     public string? Title { get; set; }
@@ -17,6 +17,15 @@ public class Book
     [JsonPropertyName("authorId")]
     public int AuthorId { get; set; }
     public Author? Author { get; set; }
-    [JsonIgnore]
-    public ICollection<Copy> Copies { get; set; } = new List<Copy>();
+}
+public class BookDto
+{
+    [JsonPropertyName("id")]
+    public long Id { get; set; }
+    [JsonPropertyName("title")]
+    public string? Title { get; set; }
+    [JsonPropertyName("year")]
+    public int Year { get; set; }
+    [JsonPropertyName("author")]
+    public AuthorDto? Author { get; set; }
 }
