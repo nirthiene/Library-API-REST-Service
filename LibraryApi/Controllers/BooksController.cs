@@ -23,9 +23,9 @@ public class BooksController : ControllerBase
     public IActionResult GetAll() => Ok(_db.Books.ToList());
 
     [HttpGet("{id}")]
-    public IActionResult GetById(int id)
+    public IActionResult GetById(long id) //int -> long
     {
-        var book = _db.Books.Include(b => b.Author).FirstOrDefault(b=> b.Id==id);
+        var book = _db.Books.Include(b => b.Author).FirstOrDefault(b => b.Id == id);
         //var book = _db.Books.Find(id);
         return book == null ? NotFound() : Ok(book);
     }
@@ -36,7 +36,7 @@ public class BooksController : ControllerBase
         if (!IsValidBook(book))
             return BadRequest();
 
-        var author = _db.Authors.Find(book.AuthorId);
+        var author = _db.Authors.Find((long)book.AuthorId); //book -> (long)book
         book.Author = author;
 
         _db.Books.Add(book);
@@ -50,21 +50,31 @@ public class BooksController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    public IActionResult Update(int id, Book updatedBook)
+    public IActionResult Update(long id, Book updatedBook)//int -> long
     {
         var book = _db.Books.Find(id);
         if (book == null) return NotFound();
 
+        if (!int.TryParse(updatedBook.Year.ToString(), out int yearValue) || yearValue < 0)
+        {
+            return BadRequest("Invalid year.");
+        }
+        var authorExists = _db.Authors.Any(a => a.Id == updatedBook.AuthorId);
+        if (!authorExists)
+        {
+            return BadRequest("Author does not exist.");
+        }
+
         book.Title = updatedBook.Title;
         book.Year = updatedBook.Year;
-        book.AuthorId = updatedBook.AuthorId;
+        book.AuthorId = (int)updatedBook.AuthorId;
 
         _db.SaveChanges();
         return NoContent();
     }
 
     [HttpDelete("{id}")]
-    public IActionResult Delete(int id)
+    public IActionResult Delete(long id) //int -> long
     {
         var book = _db.Books.Find(id);
         if (book == null) return NotFound();

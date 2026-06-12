@@ -6,7 +6,7 @@ public class Book
 {
 
     [JsonPropertyName("id")]
-    public int Id { get; set; }
+    public long Id { get; set; } //int -> long
     [Required]
     [JsonPropertyName("title")]
     public string? Title { get; set; }
